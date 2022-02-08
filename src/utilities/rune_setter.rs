@@ -21,14 +21,15 @@ pub async fn set_runes(champion: &str) {
 
     let put_runes_request_body = get_put_runes_request(champion, &lcu_runes).await;
     println!("{:?}", put_runes_request_body);
-    let first_rune_id = runes[0].id;
-    let first_rune_id_string = first_rune_id.to_string();
-    let first_rune_id_str = first_rune_id_string.as_str();
+
+    let first_rune_id = runes[0].id.to_string();
+    let first_rune_id_str = first_rune_id.as_str();
     let url = format!("lol-perks/v1/pages/{}", first_rune_id_str);
     league_client
         .put::<PutRunePageResponse, PutRunePage>(&url, Some(put_runes_request_body))
         .await
         .unwrap_err();
+
     println!("{:?}", lcu_runes);
 }
 
@@ -49,7 +50,7 @@ async fn get_put_runes_request(champion: &str, lcu_runes: &LcuRunes) -> PutRuneP
     }
 }
 
-pub fn get_league_client() -> Result<RequestClient, RiftInitializationError> {
+fn get_league_client() -> Result<RequestClient, RiftInitializationError> {
     let lockfile = super::lockfile_fetcher::get_lockfile();
     match lockfile {
         Ok(l) => Ok(http::league_client_api::get_request_client(l)),
