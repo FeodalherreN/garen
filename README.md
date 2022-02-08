@@ -1,5 +1,5 @@
 # garen
-Rust rune setter for league of legends.
+Rune setter for league of legends.
 
 ## Installation
 
