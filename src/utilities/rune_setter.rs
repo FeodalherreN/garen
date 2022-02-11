@@ -20,7 +20,6 @@ pub async fn set_runes(champion: &str) {
         .unwrap();
 
     let put_runes_request_body = get_put_runes_request(champion, &lcu_runes).await;
-    println!("{:?}", put_runes_request_body);
 
     let first_rune_id = runes[0].id.to_string();
     let first_rune_id_str = first_rune_id.as_str();
@@ -30,7 +29,7 @@ pub async fn set_runes(champion: &str) {
         .await
         .unwrap_err();
 
-    println!("{:?}", lcu_runes);
+    println!("{:#?}", lcu_runes);
 }
 
 async fn get_put_runes_request(champion: &str, lcu_runes: &LcuRunes) -> PutRunePage {

@@ -13,7 +13,6 @@ pub struct RequestClient {
     pub lockfile: LockfileContents,
 }
 
-// This is a very stupid fix, but considering that Rust does not have never types on stable, nor is setting a default generic type allowed, I'm left with no choice.
 #[derive(SerializeDerive)]
 struct EmptyGetRequestBody {}
 
