@@ -1,48 +1,19 @@
-use crate::models::lcu_runes::LcuRunes;
+use crate::{
+    constants::css_queries,
+    models::{champion_settings::ChampionSettings, rune_setup::RuneSetup, rune_tree::RuneTree},
+};
 use select::{
     document::Document,
+    node::Node,
     predicate::{Class, Name},
 };
 
-pub async fn scrape_runes(champion: &str) -> LcuRunes {
+pub async fn scrape_champion_settings(champion: &str) -> ChampionSettings {
     let body_response = get_body_response(champion).await;
-    let lcu_runes = scrape_body_response(body_response);
+    let document = Document::from(&body_response[..]);
+    let champion_settings = get_champion_settings(&document);
 
-    lcu_runes
-}
-
-fn scrape_body_response(body_response: String) -> LcuRunes {
-    let body_resp: &str = &body_response[..];
-    let document = Document::from(body_resp);
-    let rune_titles = get_rune_titles(document.to_owned());
-    let perks = get_perks(document.to_owned());
-
-    let lcu_runes = LcuRunes {
-        primary: rune_titles[0].to_owned(),
-        perks: perks.to_owned(),
-        secondary: rune_titles[1].to_owned(),
-    };
-
-    lcu_runes
-}
-
-fn get_perks(document: Document) -> Vec<String> {
-    let mut perks: Vec<String> = Vec::new();
-    for node in document.find(Class("perk-active")).take(6) {
-        let perk_image = node.find(Name("img")).next().unwrap();
-        let perk_value = perk_image.attr("alt").unwrap();
-        let parsed_perk = parse_perk(perk_value);
-        perks.push(parsed_perk);
-    }
-
-    for node in document.find(Class("shard-active")).take(3) {
-        let shard_image = node.find(Name("img")).next().unwrap();
-        let shard_value = shard_image.attr("alt").unwrap();
-        let parsed_shard = parse_perk(shard_value);
-        perks.push(parsed_shard);
-    }
-
-    return perks;
+    champion_settings
 }
 
 fn parse_perk(perk: &str) -> String {
@@ -55,19 +26,77 @@ fn parse_perk(perk: &str) -> String {
     parsed_perk
 }
 
-fn get_rune_titles(document: Document) -> Vec<String> {
-    let mut titles: Vec<String> = Vec::new();
-    for node in document.find(Class("perk-style-title")).take(2) {
-        titles.push(node.text());
-    }
-
-    titles
-}
-
 async fn get_body_response(champion: &str) -> String {
     let url = format!("https://u.gg/lol/champions/aram/{}-aram", champion);
     let response = reqwest::get(url).await.unwrap();
     let body_response = response.text().await.unwrap();
 
     return body_response;
+}
+
+fn get_champion_settings(document: &Document) -> ChampionSettings {
+    let rune_setup = get_rune_setup(&document);
+    let skill_setup = get_spells_or_skills(&document, css_queries::SKILL_PRIORITY_PATH);
+    let spell_order = get_spells_or_skills(&document, css_queries::SUMMONER_SPELLS);
+
+    ChampionSettings {
+        skill_priority: skill_setup,
+        rune_trees: rune_setup,
+        spells: spell_order,
+    }
+}
+
+fn get_rune_setup(document: &Document) -> RuneSetup {
+    let primary_tree = get_rune_specifications(&document, css_queries::PRIMARY_TREE);
+    let secondary_tree = get_rune_specifications(&document, css_queries::SECONDARY_TREE);
+
+    RuneSetup {
+        primary_tree,
+        secondary_tree,
+    }
+}
+
+fn get_rune_specifications(document: &Document, query_selector: &str) -> RuneTree {
+    let mut title: String = "".to_string();
+    let mut perks = Vec::new();
+    for node in document.find(Class(query_selector)).take(1) {
+        title = node
+            .find(Class(css_queries::PERK_STYLE_TITLE))
+            .next()
+            .unwrap()
+            .text();
+
+        perks.append(&mut get_perk(&node, css_queries::PERK_ACTIVE));
+        perks.append(&mut get_perk(&node, css_queries::SHARD_ACTIVE));
+    }
+
+    RuneTree {
+        title: title,
+        perks: perks,
+    }
+}
+
+fn get_perk(node: &Node, query_selector: &str) -> Vec<String> {
+    let mut perks: Vec<String> = Vec::new();
+    for perk_node in node.find(Class(query_selector)) {
+        let perk_image = perk_node.find(Name(css_queries::IMG)).next().unwrap();
+        let perk_value = perk_image.attr(css_queries::ALT).unwrap();
+        let parsed_perk = parse_perk(perk_value);
+        perks.push(parsed_perk);
+    }
+
+    perks
+}
+
+fn get_spells_or_skills(document: &Document, query_selector: &str) -> Vec<String> {
+    let mut spells: Vec<String> = Vec::new();
+    for node in document.find(Class(query_selector)).take(1) {
+        for img in node.find(Name(css_queries::IMG)) {
+            let mut spell = img.attr(css_queries::ALT).unwrap().to_owned();
+            spell = spell.replace("Summoner Spell ", "");
+            spells.push(spell.to_string());
+        }
+    }
+
+    spells
 }

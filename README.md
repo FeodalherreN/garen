@@ -5,14 +5,14 @@ Rune setter for league of legends.
 
 Use the package manager [cargo](https://crates.io/) to install garen.
 
-```bash
+```rust
 cargo build
 ```
 
 ## Usage
 
 ```rust
-# sets runes for given champion
+// sets runes for given champion
 cargo run <champ-name>
 ```
 

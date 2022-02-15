@@ -5,14 +5,15 @@ use crate::{
         errors::RiftInitializationError, lcu_runes::LcuRunes, put_rune_page::PutRunePage,
         put_rune_page_response::PutRunePageResponse, rune_page::RunePage,
     },
-    utilities::rune_fetcher,
+    utilities::{result_printer, rune_fetcher},
 };
 
-pub async fn set_runes(champion: &str) {
+pub async fn set_champion_settings(champion: &str) {
     println!("Fetching runes for {}...", champion);
-    let lcu_runes = rune_fetcher::scrape_runes(champion).await;
+    let mut champion_settings = rune_fetcher::scrape_champion_settings(champion).await;
 
-    println!("Settings runes for {}...", champion);
+    result_printer::print_result(&champion_settings);
+    let lcu_runes = super::runes_mapper::map_champion_settings(&mut champion_settings);
     let mut league_client = get_league_client().unwrap();
     let runes = league_client
         .get::<Vec<RunePage>>(constants::lcu_urls::GET_RUNE_PAGES)
@@ -28,8 +29,6 @@ pub async fn set_runes(champion: &str) {
         .put::<PutRunePageResponse, PutRunePage>(&url, Some(put_runes_request_body))
         .await
         .unwrap_err();
-
-    println!("{:#?}", lcu_runes);
 }
 
 async fn get_put_runes_request(champion: &str, lcu_runes: &LcuRunes) -> PutRunePage {

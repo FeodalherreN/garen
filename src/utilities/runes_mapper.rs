@@ -1,4 +1,20 @@
-use crate::models::runes_reforged::RunesReforged;
+use crate::models::{
+    champion_settings::ChampionSettings, lcu_runes::LcuRunes, runes_reforged::RunesReforged,
+};
+
+pub fn map_champion_settings(champion_settings: &mut ChampionSettings) -> LcuRunes {
+    let mut all_perks: Vec<String> = Vec::new();
+    all_perks.append(&mut champion_settings.rune_trees.primary_tree.perks);
+    all_perks.append(&mut champion_settings.rune_trees.secondary_tree.perks);
+
+    let lcu_runes = LcuRunes {
+        primary: champion_settings.rune_trees.primary_tree.title.to_owned(),
+        perks: all_perks,
+        secondary: champion_settings.rune_trees.secondary_tree.title.to_owned(),
+    };
+
+    lcu_runes
+}
 
 pub fn map_runes(rune: String, runes_reforged: Vec<RunesReforged>) -> i64 {
     for rn in runes_reforged.into_iter() {
