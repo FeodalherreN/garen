@@ -1,5 +1,5 @@
 pub const PRIMARY_TREE: &str = "primary-tree";
-pub const SECONDARY_TREE: &str = "primary-tree";
+pub const SECONDARY_TREE: &str = "secondary-tree";
 pub const SKILL_PRIORITY_PATH: &str = "skill-priority-path";
 pub const SUMMONER_SPELLS: &str = "summoner-spells";
 pub const IMG: &str = "img";
