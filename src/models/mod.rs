@@ -1,4 +1,5 @@
 pub mod champion_settings;
+pub mod empty_struct;
 pub mod errors;
 pub mod lcu_runes;
 pub mod put_rune_page;

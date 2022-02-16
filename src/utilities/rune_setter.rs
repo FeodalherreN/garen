@@ -2,8 +2,9 @@ use crate::{
     constants,
     http::{self, league_client_api::RequestClient},
     models::{
-        errors::RiftInitializationError, lcu_runes::LcuRunes, put_rune_page::PutRunePage,
-        put_rune_page_response::PutRunePageResponse, rune_page::RunePage,
+        self, empty_struct::EmptyStruct, errors::RiftInitializationError, lcu_runes::LcuRunes,
+        put_rune_page::PutRunePage, put_rune_page_response::PutRunePageResponse,
+        rune_page::RunePage,
     },
     utilities::{result_printer, rune_fetcher},
 };
@@ -26,7 +27,7 @@ pub async fn set_champion_settings(champion: &str) {
     let first_rune_id_str = first_rune_id.as_str();
     let url = format!("lol-perks/v1/pages/{}", first_rune_id_str);
     league_client
-        .put::<PutRunePageResponse, PutRunePage>(&url, Some(put_runes_request_body))
+        .put::<EmptyStruct, PutRunePage>(&url, Some(put_runes_request_body))
         .await
         .unwrap_err();
 }

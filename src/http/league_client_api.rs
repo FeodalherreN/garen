@@ -39,10 +39,6 @@ impl RequestClient {
         };
         return match response {
             Ok(r) => {
-                if r.content_length().to_owned().unwrap() == 0 {
-                    // Return empty?
-                }
-
                 let parsed = r.json::<T>().await;
                 match parsed {
                     Ok(p) => Ok(p),

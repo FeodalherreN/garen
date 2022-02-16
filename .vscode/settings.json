@@ -1,6 +1,7 @@
 {
     "[rust]": {
-        "editor.defaultFormatter": "statiolake.vscode-rustfmt", // Makes the magic
-        "editor.formatOnSave": true // Optional
-    },
+        "editor.defaultFormatter": "statiolake.vscode-rustfmt",
+        "editor.formatOnSave": true,
+        "editor.semanticHighlighting.enabled": true
+    }
 }
