@@ -2,16 +2,15 @@ use crate::{
     constants,
     http::{self, league_client_api::RequestClient},
     models::{
-        self, empty_struct::EmptyStruct, errors::RiftInitializationError, lcu_runes::LcuRunes,
-        put_rune_page::PutRunePage, put_rune_page_response::PutRunePageResponse,
-        rune_page::RunePage,
+        build_args::BuildArgs, empty_struct::EmptyStruct, errors::RiftInitializationError,
+        lcu_runes::LcuRunes, put_rune_page::PutRunePage, rune_page::RunePage,
     },
     utilities::{result_printer, rune_fetcher},
 };
 
-pub async fn set_champion_settings(champion: &str) {
-    println!("Fetching runes for {}...", champion);
-    let mut champion_settings = rune_fetcher::scrape_champion_settings(champion).await;
+pub async fn set_champion_settings(build_args: &BuildArgs) {
+    println!("Fetching runes for {}...", build_args.champion);
+    let mut champion_settings = rune_fetcher::scrape_champion_settings(build_args).await;
 
     result_printer::print_result(&champion_settings);
     let lcu_runes = super::runes_mapper::map_champion_settings(&mut champion_settings);
@@ -21,7 +20,8 @@ pub async fn set_champion_settings(champion: &str) {
         .await
         .unwrap();
 
-    let put_runes_request_body = get_put_runes_request(champion, &lcu_runes).await;
+    let put_runes_request_body =
+        get_put_runes_request(build_args.champion.as_str(), &lcu_runes).await;
 
     let first_rune_id = runes[0].id.to_string();
     let first_rune_id_str = first_rune_id.as_str();

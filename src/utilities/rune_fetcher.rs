@@ -1,6 +1,9 @@
 use crate::{
     constants::css_queries,
-    models::{champion_settings::ChampionSettings, rune_setup::RuneSetup, rune_tree::RuneTree},
+    models::{
+        build_args::BuildArgs, champion_settings::ChampionSettings, rune_setup::RuneSetup,
+        rune_tree::RuneTree,
+    },
 };
 use select::{
     document::Document,
@@ -8,8 +11,11 @@ use select::{
     predicate::{Class, Name},
 };
 
-pub async fn scrape_champion_settings(champion: &str) -> ChampionSettings {
-    let body_response = get_body_response(champion).await;
+use super::url_builder;
+
+pub async fn scrape_champion_settings(build_args: &BuildArgs) -> ChampionSettings {
+    let url = url_builder::build_url(build_args);
+    let body_response = get_body_response(url).await;
     let document = Document::from(&body_response[..]);
     let champion_settings = get_champion_settings(&document);
 
@@ -26,8 +32,7 @@ fn parse_perk(perk: &str) -> String {
     parsed_perk
 }
 
-async fn get_body_response(champion: &str) -> String {
-    let url = format!("https://u.gg/lol/champions/aram/{}-aram", champion);
+async fn get_body_response(url: String) -> String {
     let response = reqwest::get(url).await.unwrap();
     let body_response = response.text().await.unwrap();
 

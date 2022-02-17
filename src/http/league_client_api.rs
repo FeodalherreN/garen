@@ -55,35 +55,12 @@ impl RequestClient {
             .await;
     }
 
-    pub async fn post<T: DeserializeOwned, S: Serialize + Sized>(
-        &mut self,
-        path: &str,
-        body: Option<S>,
-    ) -> Result<T, RiftApiRequestError> {
-        return self.request::<T, S>(Methods::Post, path, body).await;
-    }
-
     pub async fn put<T: DeserializeOwned, S: Serialize + Sized>(
         &mut self,
         path: &str,
         body: Option<S>,
     ) -> Result<T, RiftApiRequestError> {
         return self.request::<T, S>(Methods::Put, path, body).await;
-    }
-
-    pub async fn delete<T: DeserializeOwned, S: Serialize + Sized>(
-        &mut self,
-        path: &str,
-        body: Option<S>,
-    ) -> Result<T, RiftApiRequestError> {
-        return self.request::<T, S>(Methods::Delete, path, body).await;
-    }
-
-    pub async fn head<T: DeserializeOwned, S: Serialize + Sized>(
-        &mut self,
-        path: &str,
-    ) -> Result<T, RiftApiRequestError> {
-        return self.request::<T, S>(Methods::Head, path, None).await;
     }
 }
 
