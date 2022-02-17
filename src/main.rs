@@ -20,18 +20,18 @@ async fn main() {
         .allow_invalid_utf8_for_external_subcommands(true)
         .subcommand(
             Command::new("champion")
-                .about("Clones repos")
-                .arg(arg!(<CHAMPION> "The remote to clone"))
+                .about("The name of the champion you are going to play.")
+                .arg(arg!(<CHAMPION> "Champion name"))
                 .arg_required_else_help(true)
                 .subcommand(
                     Command::new("mode")
-                        .about("Clones repos")
-                        .arg(arg!(<MODE> "The remote to clone"))
+                        .about("The mode that you are going to play (ARAM/NORMAL)")
+                        .arg(arg!(<MODE> "The mode you are going to play."))
                         .arg_required_else_help(true)
                         .subcommand(
                             Command::new("role")
-                                .about("Clones repos")
-                                .arg(arg!(<ROLE> "The remote to clone"))
+                                .about("The specific role you will play.")
+                                .arg(arg!(<ROLE> "The role you will play"))
                                 .arg_required_else_help(true),
                         ),
                 ),

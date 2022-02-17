@@ -12,8 +12,12 @@ cargo build
 ## Usage
 
 ```rust
-// sets runes for given champion
-cargo run <champ-name>
+// sets default ARAM runes
+cargo run champion <CHAMPION>
+// sets default for mode and default role
+cargo run champion <CHAMPION> mode <MODE>
+// sets runes for given champion for a specific mode and role
+cargo run champion <CHAMPION> mode <MODE> role <ROLE>
 ```
 
 ## Contributing
