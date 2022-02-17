@@ -6,18 +6,25 @@ Rune setter for league of legends.
 Use the package manager [cargo](https://crates.io/) to install garen.
 
 ```rust
-cargo build
+cargo build -- release
 ```
+
+I recommend to set some alias for it:
+
+```bash
+alias fetchme="/PATH/garen/target/release/./garen"
+```
+
 
 ## Usage
 
 ```rust
 // sets default ARAM runes
-cargo run champion <CHAMPION>
+fetchme champion <CHAMPION>
 // sets default for mode and default role
-cargo run champion <CHAMPION> mode <MODE>
+fetchme champion <CHAMPION> mode <MODE>
 // sets runes for given champion for a specific mode and role
-cargo run champion <CHAMPION> mode <MODE> role <ROLE>
+fetchme champion <CHAMPION> mode <MODE> role <ROLE>
 ```
 
 ## Contributing
